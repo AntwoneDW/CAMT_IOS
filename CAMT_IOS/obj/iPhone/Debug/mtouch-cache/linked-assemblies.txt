@@ -1,0 +1,6 @@
+/Users/antwonedw/Projects/CAMT_IOS/CAMT_IOS/obj/iPhone/Debug/mtouch-cache/Link/monotouch.dll
+/Users/antwonedw/Projects/CAMT_IOS/CAMT_IOS/obj/iPhone/Debug/mtouch-cache/Link/CAMT_IOS.exe
+/Users/antwonedw/Projects/CAMT_IOS/CAMT_IOS/obj/iPhone/Debug/mtouch-cache/Link/System.dll
+/Users/antwonedw/Projects/CAMT_IOS/CAMT_IOS/obj/iPhone/Debug/mtouch-cache/Link/mscorlib.dll
+/Users/antwonedw/Projects/CAMT_IOS/CAMT_IOS/obj/iPhone/Debug/mtouch-cache/Link/System.Core.dll
+/Users/antwonedw/Projects/CAMT_IOS/CAMT_IOS/obj/iPhone/Debug/mtouch-cache/Link/ZipArchive.dll

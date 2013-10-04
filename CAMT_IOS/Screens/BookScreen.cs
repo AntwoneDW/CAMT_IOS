@@ -7,7 +7,7 @@ namespace CAMT_IOS
 {
 	public partial class BookScreen : UIViewController
 	{
-		public static string bookUrl  { get; set; } 
+		private static string bookUrl{ get; set; } 
 
 		static bool UserInterfaceIdiomIsPhone {
 			get { return UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone; }
@@ -16,7 +16,25 @@ namespace CAMT_IOS
 		public BookScreen ()
 			: base (UserInterfaceIdiomIsPhone ? "BookScreen_iPhone" : "BookScreen_iPad", null)
 		{
+			//Console.WriteLine ("SETTING THE WEBVIEW TO FILL THE SCREEN");
+			//this.webViewBookScreen.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+
 		}
+
+
+		public void loadThisUrl( string urlToLoad )
+		{
+			if (urlToLoad != bookUrl) 
+			{
+				Console.WriteLine ("urlToLoad:  " + urlToLoad );
+				bookUrl = urlToLoad;
+				//webView.LoadRequest(new NSUrlRequest(new NSUrl(localHtmlUrl, false)));
+				this.webViewBookScreen.LoadRequest(new NSUrlRequest(new NSUrl(bookUrl, false)));
+				// Perform any additional setup after loading the view, typically from a nib.
+				//this.webViewBookScreen.ScalesPageToFit = true;
+			}
+		}
+
 
 		public override void DidReceiveMemoryWarning ()
 		{
@@ -29,8 +47,8 @@ namespace CAMT_IOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			this.webViewBookScreen.LoadRequest(new NSUrlRequest(new NSUrl(bookUrl)));
-			// Perform any additional setup after loading the view, typically from a nib.
+			Console.WriteLine ("SETTING THE WEBVIEW TO FILL THE SCREEN from viewdidload");
+			this.webViewBookScreen.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 		}
 	}
 }

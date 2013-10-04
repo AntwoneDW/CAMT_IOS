@@ -1,0 +1,203 @@
+<html>
+<head>
+<title>.</title>
+<style type="text/css">
+<!--
+    body{ margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; background-color: #ECEADC}
+    .inputBox { width: 60px; font: 10px Arial, Helvetica, Verdana, sans-serif; color: #000000; margin-top: -1px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px}
+    img { border: 0}
+-->
+</style>
+<script type="text/javascript">
+<!--
+    var firstpage = 1;
+    var lastpage = 8;
+    var curpage = 1;
+    var curzoom = 100;
+    var dp = 'dprev.gif';
+    var ep = 'eprev.gif';
+    var df = 'dfirst.gif';
+    var ef = 'efirst.gif';
+    var dn = 'dnext.gif';
+    var en = 'enext.gif';
+    var dl = 'dlast.gif';
+    var el = 'elast.gif';
+    var pd = 'dplus.gif';
+    var pl = 'eplus.gif';
+    var md = 'dminus.gif';
+    var ms = 'eminus.gif';
+    var icons=new Array(12);
+    function preloadIcons()
+    {
+      icons[0] = new Image(); icons[0].src = dp;
+      icons[1] = new Image(); icons[1].src = ep;
+      icons[2] = new Image(); icons[2].src = df;
+      icons[3] = new Image(); icons[3].src = ef;
+      icons[4] = new Image(); icons[4].src = dn;
+      icons[5] = new Image(); icons[5].src = en;
+      icons[6] = new Image(); icons[6].src = dl;
+      icons[7] = new Image(); icons[7].src = el;
+      icons[8] = new Image(); icons[8].src = pd;
+      icons[9] = new Image(); icons[9].src = pl;
+      icons[10] = new Image(); icons[10].src = md;
+      icons[11] = new Image(); icons[11].src = ms;
+    };
+    function pagerefresh()
+    {
+      parent.text.refresh();
+      parent.text.focus();
+    }
+    function setzoom(zoom)
+    {
+      if(curzoom != zoom)
+      {
+        curzoom = zoom;
+        document.zoomfield.zoomlevel.selectedIndex = 10 - (zoom - 100) / 10;
+        zoombutrefresh();
+        pagerefresh();
+      }
+    }
+    function zoombutrefresh()
+    {
+      if(curzoom != 50)
+      {
+        document.zo.src=ms;
+      }
+      else
+      {
+        document.zo.src=md;
+      }
+      if(curzoom != 200)
+      {
+        document.zi.src=pl;
+      }
+      else
+      {
+        document.zi.src=pd;
+      }
+    }
+    function navbutrefresh()
+    {
+      if(curpage!=firstpage)
+      {
+        document.rf.src=ef;
+        document.pp.src=ep;
+      }
+      else
+      {
+        document.rf.src=df;
+        document.pp.src=dp;
+      }
+      if(curpage!=lastpage)
+      {
+        document.rl.src=el;
+        document.np.src=en;
+      }
+      else
+      {
+        document.rl.src=dl;
+        document.np.src=dn;
+      }
+    }
+    function setcurpage(pagenum)
+    {
+      if(curpage!=pagenum)
+      {
+        curpage = pagenum;
+        navbutrefresh();
+      }
+    }
+    function gfp()
+    {
+      openpage(firstpage);
+    }
+    function glp()
+    {
+      openpage(lastpage);
+    }
+    function gpp()
+    {
+      var pagenum = curpage - 1;
+      if(pagenum < firstpage)
+      {
+        return;
+      }
+      openpage(pagenum);
+    }
+    function gnp()
+    {
+      var pagenum = curpage + 1;
+      if(pagenum > lastpage)
+      {
+        return;
+      }
+      openpage(pagenum);
+    }
+    function openpage(pagenum)
+    {
+      var strzero = "";
+      var strnumb = "";
+      strnumb = strnumb + pagenum;
+      for (var i = 1; i <= 3 - strnumb.length; i++)
+      {
+        strzero = strzero + "0";
+      }
+      parent.text.location = 'page_' + strzero + pagenum + '.html';
+      parent.text.focus();
+    }
+    function zin()
+    {
+      if(curzoom < 200)
+      {
+        setzoom(Math.abs(curzoom) + 10);
+      }
+    }
+    function zot()
+    {
+      if(curzoom > 50)
+      {
+        setzoom(curzoom - 10);
+      }
+    }
+    function _zoommenu(selObj)
+    {
+      setzoom(selObj.options[selObj.selectedIndex].value);
+    }
+//-->
+</script>
+</head>
+<body>
+<table class="inputBox">
+  <tr>
+    <td valign="baseline"><a href="#" onClick="javascript:gfp(); return false"><IMG src="dfirst.gif" alt="First Page" name="rf"></IMG></a></td>
+    <td valign="baseline"><a href="#" onClick="javascript:gpp(); return false"><IMG src="dprev.gif" alt="Previous Page" name="pp"></IMG></a></td>
+    <td valign="baseline"><a href="#" onClick="javascript:gnp(); return false"><IMG src="enext.gif" alt="Next Page" name="np"></IMG></a></td>
+    <td valign="baseline"><a href="#" onClick="javascript:glp(); return false"><IMG src="elast.gif" alt="Last Page" name="rl"></IMG></a></td>
+    <td valign="baseline"><a href="#" onClick="javascript:zot(); return false"><IMG src="eminus.gif" alt="Zoom Out" name="zo"></IMG></a></td>
+    <td valign="top">
+      <form name="zoomfield">
+      <select name="zoomlevel" onChange="_zoommenu(this)" class="inputBox">
+        <option value="200">200</option>
+        <option value="190">190</option>
+        <option value="180">180</option>
+        <option value="170">170</option>
+        <option value="160">160</option>
+        <option value="150">150</option>
+        <option value="140">140</option>
+        <option value="130">130</option>
+        <option value="120">120</option>
+        <option value="110">110</option>
+        <option value="100" selected>100</option>
+        <option value="90">90</option>
+        <option value="80">80</option>
+        <option value="70">70</option>
+        <option value="60">60</option>
+        <option value="50">50</option>
+      </select>
+     </form>
+   </td>
+   <td valign="baseline"><a href="#" onClick="javascript:zin(); return false"><IMG src="eplus.gif" alt="Zoom In" name="zi"></IMG></a></td>
+  </tr>
+</table>
+</body>
+</html>
