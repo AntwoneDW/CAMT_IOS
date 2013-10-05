@@ -1,5 +1,8 @@
 using System;
 using System.Drawing;
+using System.Globalization;
+using System.Threading;
+using System.Xml;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using System.IO;
@@ -8,19 +11,19 @@ using System.Net;
 using System.Text;
 using System.IO.Compression;
 using MiniZip.ZipArchive;
+using RadialProgress;
 
 namespace CAMT_IOS
 {
 	public partial class MainScreen : UIViewController
 	{
 		
-		UIButton showSimpleButton, showComplexButton;
 		UIActionSheet actionSheet;
-
 		BookScreen bookScreen;
 		SearchResultsScreen searchResultsScreen;
 		LoadingOverlay loadingOverlay;
 		VideoListScreen vidListScreen;
+        WebPortalScreen naaWebPortal, aimeWebPortal, lmsWebPortal;
 
 		static bool UserInterfaceIdiomIsPhone {
 			get { return UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone; }
@@ -39,161 +42,37 @@ namespace CAMT_IOS
 			// Release any cached data, images, etc that aren't in use.
 		}
 
-//		CloggedWaterPump_x264.mp4
-//			Dish Washer and Corner Seal.flv_x264.mp4
-//				Dish Washer and Corner Seal_x264.mp4
-//				Dryer Air Flow Troubleshooting_x264.mp4
-//				Refridgerator Thermomemeter_x264.mp4
-//				Reset Oven Temp_x264.mp4
-		public static string[] vidFileNames = new string[]
- 		{
-			"CloggedWaterPump_x264.mp4",
-			"Dish Washer and Corner Seal.flv_x264.mp4",
-			"Dryer Air Flow Troubleshooting_x264.mp4",
-			"Refridgerator Thermomemeter_x264.mp4",
-			"Reset Oven Temp_x264.mp4",
-		};
-		public static string pathToVideoFiles = "";
-		public void setupVideos2()
-		{
-			Console.WriteLine ("setupVideos() STARTING");
-			foreach (string vidFileName in vidFileNames) {
-				try
-				{
-					var webClient = new WebClient();
-					string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-					documentsPath = documentsPath + Path.DirectorySeparatorChar + "_CAMT_VIDEOS";
-					pathToVideoFiles = documentsPath;
-					Directory.CreateDirectory(pathToVideoFiles );
-					string localPath = Path.Combine (pathToVideoFiles, vidFileName);
-					webClient.DownloadDataCompleted += (s, e) => {
-						try {
-							Console.WriteLine("Download of videos file is complete");
-							var bytes = e.Result; // get the downloaded data
-							Console.WriteLine("Saving to : " + localPath );
-							Console.WriteLine("writing bytes now to : " + localPath );
-							File.WriteAllBytes (localPath, bytes); // writes to local storage   
-
-							string[] files = Directory.GetFiles(  pathToVideoFiles );
-							foreach(string tempFile in files )
-							{
-								Console.WriteLine( "files at dir of video files: " + Path.GetFileName( tempFile ) );
-							}
-						} catch (Exception ex) {
-							Console.WriteLine(ex.Message);
-							Console.WriteLine(ex.StackTrace); 
-						}
-					};
-					var url = new Uri("http://dynatechonline.com/_temp/_camt_vids/" + vidFileName ); // Html home page
-					Console.WriteLine("downloading from url: " + url);
-					if( File.Exists( localPath ) == false )
-					{
-						Console.WriteLine("Video File Zip Not there so downloading");
-						webClient.DownloadDataAsync(url);
-					}else
-					{
-						Console.WriteLine("No need to download that video it exists");
-					}
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine(e);
-					Console.WriteLine(e.Message);
-					Console.WriteLine(e.StackTrace);
-				}
-			}
-			Console.WriteLine ("setupVideos() ENDING");
-
-		}
-
-		public static string videoFileDirStr = "";
-		public static string videoFileZipLoc = "";
-		public void setupVideos()
-		{
-			Console.WriteLine ("setupVideos() STARTING");
-			try
-			{
-				var webClient = new WebClient();
-				string localFilename = "Videos.zip";
-				string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-				string localPath = Path.Combine (documentsPath, localFilename);
-				videoFileDirStr = documentsPath;
-				videoFileZipLoc = localPath;
-				webClient.DownloadDataCompleted += (s, e) => {
-					try {
-						Console.WriteLine("Download of videos file is complete");
-						var bytes = e.Result; // get the downloaded data
-						Console.WriteLine("Saving to : " + localPath );
-						Console.WriteLine("writing bytes now to : " + localPath );
-						File.WriteAllBytes (localPath, bytes); // writes to local storage   
-						Console.WriteLine("extracting the zip file: " );
-						var zip = new ZipArchive ();
-						zip.EasyUnzip (videoFileZipLoc, videoFileDirStr, true, "");
-						Console.WriteLine("Extraction done " );
-						string[] files = Directory.GetFiles( videoFileDirStr );
-						foreach(string tempFile in files )
-						{
-							Console.WriteLine( "files of extract location: " + Path.GetFileName( tempFile ) );
-						}
-						//Utility.unZipIt(videoFileZipLoc);
-					} catch (Exception ex) {
-						Console.WriteLine(ex.Message);
-						Console.WriteLine(ex.StackTrace); 
-					}
-				};
-				var url = new Uri("http://dynatechonline.com/_temp/_camt_vids/Videos.zip"); // Html home page
-				Console.WriteLine("downloading from url: " + url);
-				if( File.Exists( videoFileZipLoc ) == false )
-				{
-					Console.WriteLine("Video File Zip Not there so downloading");
-					webClient.DownloadDataAsync(url);
-				}else
-				{
-					Console.WriteLine("No need to download videos b/c they are there");
-					string[] files = Directory.GetFiles( videoFileDirStr );
-//					string testFilePath = videoFileDirStr + Path.DirectorySeparatorChar + "Videos";
-//					Console.WriteLine("testFilePath: " +   testFilePath );
-//					Console.WriteLine("File.Exists( testFilePath ): " +   File.Exists( testFilePath ) );
-//					if( File.Exists( testFilePath ) == false)
-//					{
-						Console.WriteLine("EXTRACTING");
-					var zip = new ZipArchive ();    
-					if (zip.UnzipOpenFile (videoFileZipLoc, "")) {
-						zip.UnzipFileTo (videoFileDirStr, true);           
-						zip.UnzipCloseFile ();
-					}						
-
-					//var zip = new ZipArchive ( );
-						//zip.UnzipFileTo( videoFileDirStr, true );
-						//zip.EasyUnzip (videoFileZipLoc, videoFileDirStr, true, "");
-					//}
-					foreach(string tempFile in files )
-					{
-						Console.WriteLine( "files of extract location: " + Path.GetFileName( tempFile ) );
-					}
-					files = Directory.GetFiles( videoFileDirStr+Path.DirectorySeparatorChar+"Videos" );
-					foreach(string tempFile in files )
-					{
-						Console.WriteLine( "files of VIDEOS extract location: " + Path.GetFileName( tempFile ) );
-					}
-				}
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
-            }
-			Console.WriteLine ("setupVideos() ENDING");
-			           
-        }
-
 		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations ()
 		{
 			return UIInterfaceOrientationMask.Portrait;
 		}
 
-		WebPortalScreen naaWebPortal, aimeWebPortal, lmsWebPortal;
+		string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+		///documentsPath = documentsPath + Path.DirectorySeparatorChar + "_CAMT_VIDEOS";
+        private int count = 1;
+        public static string mediaUrlPrefix = "http://dynatechonline.com/_temp/CAMT_WEB_UPLOADS/";
+        public static string[] bookZipFileNames = new string[] { "ALL_BOOKS.zip" };
+        public static string[] videoZipFileNames = new string[] { "CAMT_VIDEOS_MEDIUM.zip" };
+        public static string camtMediaLocalMediaPath = documentsPath + Path.PathSeparator + "CAMT_MEDIA";
+        public static string videoFileDirStr = camtMediaLocalMediaPath + Path.PathSeparator + "CAMT_VIDEOS";
+        public static string bookFileDirStr = camtMediaLocalMediaPath + Path.PathSeparator + "CAMT_BOOKS";
+        //ONE WHOLE BOOKS IN ONE HTML FILE FOR VIEWING
+        public static string CAMT_Participant_OneBook_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT_Participant_OneBook" + Path.PathSeparator;
+        public static string CAMT_English_HR_2011_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-English-HR_2011" + Path.PathSeparator;
+        public static string CAMT_Text_Spanish_HR_2011_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-Text-Spanish-HR_2011" + Path.PathSeparator;
+        //SPLIT UP BOOKS IN MULTI HTML FILES FOR SEARCHING
+        public static string CAMT_Participant_OneBook_MULTI_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT_Participant_OneBook_Multi" + Path.PathSeparator;
+        public static string CAMT_English_HR_2011_MULTI_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-English-HR_2011_multi" + Path.PathSeparator;
+        public static string CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-Text-Spanish-HR_2011_multi" + Path.PathSeparator;
+        string[] searchLocationPathArr = new string[] {  
+            videoFileDirStr, 
+            CAMT_English_HR_2011_MULTI_DIRPATH, 
+            CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH
+            ,CAMT_Participant_OneBook_MULTI_DIRPATH
+        };
+        public static bool downloadingVideos = false;
+        public static bool downloadingBooks = false;
+        public static string downloadMediaXmlUrl = "http://thecrossfitbuddy.com/CAMTServerSide/CurrentMedia.xml";
 
 		public override void ViewDidLoad ()
 		{
@@ -202,16 +81,18 @@ namespace CAMT_IOS
 				///SETUP VIDEOS TASK
 				// spin up a new thread to do some long running work using StartNew
 				Task.Factory.StartNew (
-					// tasks allow you to use the lambda syntax to pass work
-					() => {
-
-					Console.WriteLine ( "Hello from setting up the videos via a task." );
-					try {
-						setupVideos2 ();
-					} catch (Exception ex) {
-						Console.WriteLine(ex.Message);
-						Console.WriteLine(ex.StackTrace);
-					}
+				// tasks allow you to use the lambda syntax to pass work
+				() => {
+					    try {
+                            NetworkStatus internetStatus = Reachability.InternetConnectionStatus();
+                            if (internetStatus != NetworkStatus.NotReachable)
+                            {
+                                setupCamtMedia();
+                            }
+                        } catch (Exception ex) {
+						    Console.WriteLine(ex.Message);
+						    Console.WriteLine(ex.StackTrace);
+					    }
 				}
 				// ContinueWith allows you to specify an action that runs after the previous thread
 				// completes
@@ -453,6 +334,394 @@ namespace CAMT_IOS
 				Console.WriteLine (ex.StackTrace);
 			}
 		}
-	}
+
+/****
+ *   SUPPORTING CAST FUNCTIONS
+ */
+
+        public DateTime getLastVideoUpdate()
+        {
+            Console.WriteLine("getLastBookUpdate Starting");
+            DateTime result = DateTime.MinValue;
+            var webClient = new WebClient();
+            /*<?xml version="1.0" encoding="utf-8" ?>
+            <last_updates>
+              <!--   yyyy-MM-dd hh:mm tt -->
+              <last_books_update>2013-09-18 07:06 PM</last_books_update>
+              <last_movies_update>2013-09-18 07:06 PM</last_movies_update>
+            </last_updates>*/
+            try
+            {
+                string dateTimeFormatStr = "yyyy-MM-dd hh:mm tt";
+                string downloadedString = webClient.DownloadString(downloadMediaXmlUrl);
+                //Console.WriteLine("downloadedString: \n" + downloadedString);
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(downloadedString);
+                string lastUpdateDateString = doc.GetElementsByTagName("last_movies_update")[0].InnerText;
+                Console.WriteLine("lastUpdateDateString: " + lastUpdateDateString);
+                DateTime lastUpdateDate;
+                lastUpdateDate = new DateTime();
+                lastUpdateDate = DateTime.ParseExact(lastUpdateDateString, dateTimeFormatStr, CultureInfo.InvariantCulture);
+                Console.WriteLine("getLastBookUpdate \n\t lastUpdateDate: " + lastUpdateDate.ToShortDateString() + " " + lastUpdateDate.ToShortTimeString());
+                result = lastUpdateDate;
+            }
+            catch (Exception ex)
+            {
+                result = DateTime.MinValue;
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+            Console.WriteLine("getLastBookUpdate ENding");
+            return result;
+        }
+
+        public DateTime getLastBookUpdate()
+        {
+            Console.WriteLine("getLastBookUpdate Starting");
+            DateTime result = DateTime.MinValue;
+            var webClient = new WebClient();
+            /*<?xml version="1.0" encoding="utf-8" ?>
+            <last_updates>
+              <!--   yyyy-MM-dd hh:mm tt -->
+              <last_books_update>2013-09-18 07:06 PM</last_books_update>
+              <last_movies_update>2013-09-18 07:06 PM</last_movies_update>
+            </last_updates>*/
+            try
+            {
+                string dateTimeFormatStr = "yyyy-MM-dd hh:mm tt";
+                string downloadedString = webClient.DownloadString(downloadMediaXmlUrl);
+                //Console.WriteLine("downloadedString: \n" + downloadedString );
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(downloadedString);
+                string lastUpdateDateString = doc.GetElementsByTagName("last_books_update")[0].InnerText;
+                Console.WriteLine("lastUpdateDateString: " + lastUpdateDateString);
+                DateTime lastUpdateDate;
+                lastUpdateDate = new DateTime();
+                lastUpdateDate = DateTime.ParseExact(lastUpdateDateString, dateTimeFormatStr, CultureInfo.InvariantCulture);
+                Console.WriteLine("getLastBookUpdate \n\t lastUpdateDate: " + lastUpdateDate.ToShortDateString() + " " + lastUpdateDate.ToShortTimeString());
+                result = lastUpdateDate;
+            }
+            catch (Exception ex)
+            {
+                result = DateTime.MinValue;
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+            Console.WriteLine("getLastBookUpdate ENding");
+            return result;
+        }
+
+
+        public bool isBookOld()
+        {
+            bool result = false;
+            try
+            {
+                DateTime lastServerUpdate = getLastBookUpdate();
+                string lastServerUpdateStr = lastServerUpdate.ToShortDateString() + "-" + lastServerUpdate.ToLongTimeString();
+                DirectoryInfo dirInfo = new DirectoryInfo(bookFileDirStr);
+                DateTime dirCreated = dirInfo.CreationTime;
+                string dirCreateDateStr = dirInfo.CreationTime.ToShortDateString() + "-" +
+                                       dirInfo.CreationTime.ToLongTimeString();
+                Console.WriteLine("isBook Old lastServerUpdateStr @ " + lastServerUpdateStr);
+                Console.WriteLine("isBook Old dirCreateDateStr   @ " + dirCreateDateStr);
+                if (lastServerUpdate > dirCreated)
+                {
+                    Console.WriteLine("Book is old");
+                    result = true;
+                }
+            }
+            catch (Exception exInstall)
+            {
+                Console.WriteLine(exInstall.Message);
+                Console.WriteLine(exInstall.StackTrace);
+                Console.WriteLine();
+            }
+            return result;
+        }
+
+        public bool isVideosOld()
+        {
+            bool result = false;
+            try
+            {
+                DateTime lastServerUpdate = getLastVideoUpdate();
+                string lastServerUpdateStr = lastServerUpdate.ToShortDateString() + "-" + lastServerUpdate.ToLongTimeString();
+                DirectoryInfo dirInfo = new DirectoryInfo(videoFileDirStr);
+                DateTime dirCreated = dirInfo.CreationTime;
+                string dirCreateDateStr = dirInfo.CreationTime.ToShortDateString() + "-" +
+                                       dirInfo.CreationTime.ToLongTimeString();
+                Console.WriteLine("isVid Old lastServerUpdateStr @ " + lastServerUpdateStr);
+                Console.WriteLine("isVid Old dirCreateDateStr   @ " + dirCreateDateStr);
+                if (lastServerUpdate > dirCreated)
+                {
+                    Console.WriteLine("Book is old");
+                    result = true;
+                }
+            }
+            catch (Exception exInstall)
+            {
+                Console.WriteLine(exInstall.Message);
+                Console.WriteLine(exInstall.StackTrace);
+                Console.WriteLine();
+            }
+            return result;
+        }
+
+        public bool bookFilesExist()
+        {
+            bool result = true;
+            try
+            {
+                result &= (System.IO.Directory.Exists(CAMT_Participant_OneBook_DIRPATH) == true &&
+                           System.IO.Directory.GetFiles(CAMT_Participant_OneBook_DIRPATH).Length > 0);
+                result &= (System.IO.Directory.Exists(CAMT_English_HR_2011_DIRPATH) == true &&
+                           System.IO.Directory.GetFiles(CAMT_English_HR_2011_DIRPATH).Length > 0);
+                result &= (System.IO.Directory.Exists(CAMT_Text_Spanish_HR_2011_DIRPATH) == true &&
+                           System.IO.Directory.GetFiles(CAMT_Text_Spanish_HR_2011_DIRPATH).Length > 0);
+                result &= (System.IO.Directory.Exists(CAMT_Participant_OneBook_MULTI_DIRPATH) == true &&
+                           System.IO.Directory.GetFiles(CAMT_Participant_OneBook_MULTI_DIRPATH).Length > 0);
+                result &= (System.IO.Directory.Exists(CAMT_English_HR_2011_MULTI_DIRPATH) == true &&
+                           System.IO.Directory.GetFiles(CAMT_English_HR_2011_MULTI_DIRPATH).Length > 0);
+                result &= (System.IO.Directory.Exists(CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH) == true &&
+                           System.IO.Directory.GetFiles(CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH).Length > 0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                Console.WriteLine(ex.StackTrace);
+            }
+            return result;
+        }
+
+        public bool videoFilesExist()
+        {
+            bool result = false;
+            try
+            {
+                if (System.IO.Directory.Exists(videoFileDirStr) == true && System.IO.Directory.GetFiles(videoFileDirStr).Length > 0)
+                {
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                Console.WriteLine(ex.StackTrace);
+            }
+            return result;
+        }
+
+        private long lastUpdateMsg = 0;
+        private void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
+        {
+            // Displays the operation identifier, and the transfer progress.   
+            //Console.WriteLine("(DateTime.Now.Ticks - lastUpdateMsg) = " + (DateTime.Now.Ticks - lastUpdateMsg) );
+            var seconds = (DateTime.Now.Ticks - lastUpdateMsg) / TimeSpan.TicksPerSecond;
+            if (seconds > 10)
+            {
+                lastUpdateMsg = DateTime.Now.Ticks;
+                Console.WriteLine("{0}    downloaded {1} of {2} bytes. {3} % complete...",
+                    (string)e.UserState,
+                    e.BytesReceived,
+                    e.TotalBytesToReceive,
+                    e.ProgressPercentage);
+            }
+        }
+
+        public void setupVideos()
+        {
+            foreach (string videoZipFileName in videoZipFileNames)
+            {
+                try
+                {
+                    string urlString = mediaUrlPrefix + videoZipFileName;
+                    bool shouldDownload = (videoFilesExist() == false) || isVideosOld();
+                    if (shouldDownload == true)
+                    {
+                        Directory.Delete(videoFileDirStr, true);
+                        GC.Collect();
+                        while (downloadingBooks)
+                        {
+                            Thread.Sleep(5 * 1000);
+                        }
+                        downloadingVideos = true;
+                        Console.WriteLine("VID DIR didn't exist so creating it");
+                        System.IO.Directory.CreateDirectory(videoFileDirStr);
+                        Console.WriteLine("Created the DIR, now downloading the videos from the server");
+                        var webClient = new WebClient();
+                        webClient.DownloadProgressChanged +=
+                            new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                        webClient.DownloadDataCompleted += (s, e) =>
+                        {
+                            try
+                            {
+                                Console.WriteLine("Download completed so now saving it to it's location @ \n" + videoFileDirStr);
+                                Console.WriteLine("1v");
+                                byte[] zipBytes = e.Result;
+                                Console.WriteLine("2v");
+                                string localFilename = videoZipFileName;
+                                Console.WriteLine("3v");
+                                string localPath = System.IO.Path.Combine(videoFileDirStr, localFilename);
+                                Console.WriteLine("4v");
+                                Console.WriteLine("vid download: localPath null? " + (localPath == null) + " zipBytes null ? " + (zipBytes == null));
+                                Directory.CreateDirectory(videoFileDirStr);
+                                System.IO.File.WriteAllBytes(localPath, zipBytes);
+                                Console.WriteLine("5v");
+                                Console.WriteLine("extracting the zip file: ");
+                                var zip = new ZipArchive();
+                                zip.EasyUnzip(localPath, videoFileDirStr, true, "");
+                                Console.WriteLine("Extraction done ");
+                                string[] files = Directory.GetFiles(videoFileDirStr);
+                                foreach (string tempFile in files)
+                                {
+                                    Console.WriteLine("files of extract location: " + Path.GetFileName(tempFile));
+                                }                                
+                                System.IO.File.Delete(localPath);
+                                Console.WriteLine("6v");
+                                Console.WriteLine("VIDEO FILE Totally Unzipped");
+                                GC.Collect();
+                                downloadingVideos = false;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                                Console.WriteLine(ex.StackTrace);
+                            }
+                        };
+                        Console.WriteLine("urlString to download video file: " + urlString);
+
+                        var url = new Uri(urlString); // Html home page
+                        webClient.DownloadDataAsync(url);
+                        Console.WriteLine("Downloading now Video File ");
+                        //webClient.DownloadData(url);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("THERE WAS AN ERROR IN setupVideos");
+                    Console.WriteLine(e);
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine("=================================");
+                    downloadingVideos = false;
+                }
+
+            }
+        }
+
+
+        public void setupBooks()
+        {
+            try
+            {
+                bool shouldDownload = (bookFilesExist() == false) || isBookOld();
+                if (shouldDownload == true)
+                {
+                    GC.Collect();
+                    try
+                    {
+                        Directory.Delete(CAMT_English_HR_2011_DIRPATH, true);
+                        Directory.Delete(CAMT_English_HR_2011_MULTI_DIRPATH, true);
+                        Directory.Delete(CAMT_Text_Spanish_HR_2011_DIRPATH, true);
+                        Directory.Delete(CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH, true);
+                        Directory.Delete(CAMT_Participant_OneBook_DIRPATH, true);
+                        Directory.Delete(CAMT_Participant_OneBook_MULTI_DIRPATH, true);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    while (downloadingVideos)
+                    {
+                        Console.WriteLine("book download waiting until videos download is done");
+                        Thread.Sleep(10 * 1000);
+                    }
+                    downloadingBooks = true;
+                    foreach (string bookZipFileName in bookZipFileNames)
+                    {
+                        string urlString = mediaUrlPrefix + bookZipFileName;
+                        Console.WriteLine("Book Dir Being Created");
+                        System.IO.Directory.CreateDirectory(bookFileDirStr);
+                        Console.WriteLine("Created the DIR, now downloading the videos from the server");
+                        var webClient = new WebClient();
+                        webClient.DownloadProgressChanged +=
+                            new DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                        webClient.DownloadDataCompleted += (s, e) =>
+                        {
+                            try
+                            {
+                                Console.WriteLine("Download Book Completed so now saving it to it's location @ \n" + bookFileDirStr);
+                                Console.WriteLine("1b");
+                                byte[] zipBytes = e.Result; // get the downloaded text
+                                Console.WriteLine("2b");
+                                string localFilename = bookZipFileName;
+                                Console.WriteLine("3b");
+                                string localPath = System.IO.Path.Combine(bookFileDirStr, localFilename);
+                                Console.WriteLine("4b");
+                                System.IO.File.WriteAllBytes(localPath, zipBytes);//  .WriteAllText(localpath, text); // writes to local storage   
+                                Console.WriteLine("5b");
+                                var zip = new ZipArchive();
+                                zip.EasyUnzip(localPath, bookFileDirStr, true, "");
+                                Console.WriteLine("Extraction done ");
+                                string[] files = Directory.GetFiles(videoFileDirStr);
+                                foreach (string tempFile in files)
+                                {
+                                    Console.WriteLine("files of extract location: " + Path.GetFileName(tempFile));
+                                }                                
+                                System.IO.File.Delete(localPath);
+                                Console.WriteLine("6b");
+                                GC.Collect();
+                                downloadingBooks = false;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                                Console.WriteLine(ex.StackTrace);
+                            }
+                        };
+                        Console.WriteLine("urlString: " + urlString);
+                        var url = new Uri(urlString); // Html home page
+                        webClient.DownloadDataAsync(url);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                downloadingBooks = false;
+            }
+        }
+
+        private void setupCamtMedia(NetworkStatus internetStatus)
+        {
+            try
+            {
+                if (internetStatus != NetworkStatus.NotReachable)
+                {
+                    setupVideos();
+                    setupBooks();
+                }
+                else
+                {
+                    if (bookFilesExist() == false || videoFilesExist() == false)
+                    {
+                        Console.WriteLine("NO Networking connection and media not present. No bueno.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine(ex.InnerException.Message);
+                    Console.WriteLine(ex.InnerException.StackTrace);
+                }
+            }
+        }
+    }
 }
 
