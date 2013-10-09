@@ -11,7 +11,6 @@ using System.Net;
 using System.Text;
 using System.IO.Compression;
 using MiniZip.ZipArchive;
-using RadialProgress;
 
 namespace CAMT_IOS
 {
@@ -64,7 +63,7 @@ namespace CAMT_IOS
         public static string CAMT_Participant_OneBook_MULTI_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT_Participant_OneBook_Multi" + Path.PathSeparator;
         public static string CAMT_English_HR_2011_MULTI_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-English-HR_2011_multi" + Path.PathSeparator;
         public static string CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-Text-Spanish-HR_2011_multi" + Path.PathSeparator;
-        string[] searchLocationPathArr = new string[] {  
+        public static string[] searchLocationPathArr = new string[] {  
             videoFileDirStr, 
             CAMT_English_HR_2011_MULTI_DIRPATH, 
             CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH
