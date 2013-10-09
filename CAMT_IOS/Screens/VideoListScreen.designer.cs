@@ -26,6 +26,9 @@ namespace CAMT_IOS
 
 		[Outlet]
 		MonoTouch.UIKit.UIButton btnResetOvenTemp { get; set; }
+
+		[Outlet]
+		MonoTouch.UIKit.UITableView dynamicVideoTable { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -52,6 +55,11 @@ namespace CAMT_IOS
 			if (btnResetOvenTemp != null) {
 				btnResetOvenTemp.Dispose ();
 				btnResetOvenTemp = null;
+			}
+
+			if (dynamicVideoTable != null) {
+				dynamicVideoTable.Dispose ();
+				dynamicVideoTable = null;
 			}
 		}
 	}
