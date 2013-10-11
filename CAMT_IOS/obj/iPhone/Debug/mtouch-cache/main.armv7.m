@@ -5,6 +5,7 @@ extern void *mono_aot_module_monotouch_info;
 extern void *mono_aot_module_mscorlib_info;
 extern void *mono_aot_module_System_Core_info;
 extern void *mono_aot_module_System_info;
+extern void *mono_aot_module_System_Xml_info;
 extern void *mono_aot_module_ZipArchive_info;
 
 void monotouch_register_modules ()
@@ -14,6 +15,7 @@ void monotouch_register_modules ()
 	mono_aot_register_module (mono_aot_module_mscorlib_info);
 	mono_aot_register_module (mono_aot_module_System_Core_info);
 	mono_aot_register_module (mono_aot_module_System_info);
+	mono_aot_register_module (mono_aot_module_System_Xml_info);
 	mono_aot_register_module (mono_aot_module_ZipArchive_info);
 
 }

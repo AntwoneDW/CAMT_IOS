@@ -1,19 +1,21 @@
 ﻿<Properties GitUserInfo="UsingGIT">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|iPhone" PreferredExecutionTarget="MonoDevelop.IPhone.IPhoneDeviceTarget.Antwone Walters’s iPad" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="CAMT_IOS/AppDelegate.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|iPhoneSimulator" PreferredExecutionTarget="MonoDevelop.IPhone.IPhoneSimulatorTarget.IPhone.6.1" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="CAMT_IOS/Screens/MainScreen.cs">
     <Files>
-      <File FileName="CAMT_IOS/Screens/MainScreen.cs" Line="448" Column="6" />
-      <File FileName="../CAMT_DROID/CAMT/CAMTMain.cs" Line="564" Column="52" />
-      <File FileName="CAMT_IOS/AppDelegate.cs" Line="49" Column="30" />
+      <File FileName="CAMT_IOS/Screens/MainScreen.cs" Line="53" Column="69" />
+      <File FileName="../CAMT_DROID/CAMT/CAMTMain.cs" Line="1" Column="1" />
+      <File FileName="CAMT_IOS/Screens/BookScreen.cs" Line="1" Column="1" />
+      <File FileName="CAMT_IOS/Utility.cs" Line="72" Column="27" />
+      <File FileName="CAMT_IOS/Reachability.cs" Line="122" Column="3" />
+      <File FileName="CAMT_IOS/Screens/VideoListScreen.cs" Line="8" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="CAMT_IOS" expanded="True">
             <Node name="Screens" expanded="True">
-              <Node name="MainScreen.cs" expanded="True" />
+              <Node name="MainScreen.cs" expanded="True" selected="True" />
             </Node>
-            <Node name="AppDelegate.cs" selected="True" />
           </Node>
         </State>
       </Pad>

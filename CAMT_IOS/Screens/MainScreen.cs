@@ -11,7 +11,7 @@ using System.Net;
 using System.Text;
 using System.IO.Compression;
 using MiniZip.ZipArchive;
-using RadialProgress;
+
 
 namespace CAMT_IOS
 {
@@ -47,24 +47,26 @@ namespace CAMT_IOS
 			return UIInterfaceOrientationMask.Portrait;
 		}
 
-		string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+		public static string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 		///documentsPath = documentsPath + Path.DirectorySeparatorChar + "_CAMT_VIDEOS";
         private int count = 1;
         public static string mediaUrlPrefix = "http://dynatechonline.com/_temp/CAMT_WEB_UPLOADS/";
         public static string[] bookZipFileNames = new string[] { "ALL_BOOKS.zip" };
-        public static string[] videoZipFileNames = new string[] { "CAMT_VIDEOS_MEDIUM.zip" };
-        public static string camtMediaLocalMediaPath = documentsPath + Path.PathSeparator + "CAMT_MEDIA";
-        public static string videoFileDirStr = camtMediaLocalMediaPath + Path.PathSeparator + "CAMT_VIDEOS";
-        public static string bookFileDirStr = camtMediaLocalMediaPath + Path.PathSeparator + "CAMT_BOOKS";
+		public static string[] videoZipFileNames = new string[] { "CAMT_VIDEOS_MEDIUM.zip" };
+		//	"CAMT_VIDEOS_MED_1.zip", "CAMT_VIDEOS_MED_2.zip", "CAMT_VIDEOS_MED_3.zip", "CAMT_VIDEOS_MED_4.zip"
+		//	,"CAMT_VIDEOS_MED_5.zip", "CAMT_VIDEOS_MED_6.zip" };
+        public static string camtMediaLocalMediaPath = documentsPath + Path.DirectorySeparatorChar + "CAMT_MEDIA";
+        public static string videoFileDirStr = camtMediaLocalMediaPath + Path.DirectorySeparatorChar + "CAMT_VIDEOS";
+        public static string bookFileDirStr = camtMediaLocalMediaPath + Path.DirectorySeparatorChar + "CAMT_BOOKS";
         //ONE WHOLE BOOKS IN ONE HTML FILE FOR VIEWING
-        public static string CAMT_Participant_OneBook_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT_Participant_OneBook" + Path.PathSeparator;
-        public static string CAMT_English_HR_2011_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-English-HR_2011" + Path.PathSeparator;
-        public static string CAMT_Text_Spanish_HR_2011_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-Text-Spanish-HR_2011" + Path.PathSeparator;
+        public static string CAMT_Participant_OneBook_DIRPATH = bookFileDirStr + Path.DirectorySeparatorChar + "CAMT_Participant_OneBook" + Path.DirectorySeparatorChar;
+        public static string CAMT_English_HR_2011_DIRPATH = bookFileDirStr + Path.DirectorySeparatorChar + "CAMT-English-HR_2011" + Path.DirectorySeparatorChar;
+        public static string CAMT_Text_Spanish_HR_2011_DIRPATH = bookFileDirStr + Path.DirectorySeparatorChar + "CAMT-Text-Spanish-HR_2011" + Path.DirectorySeparatorChar;
         //SPLIT UP BOOKS IN MULTI HTML FILES FOR SEARCHING
-        public static string CAMT_Participant_OneBook_MULTI_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT_Participant_OneBook_Multi" + Path.PathSeparator;
-        public static string CAMT_English_HR_2011_MULTI_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-English-HR_2011_multi" + Path.PathSeparator;
-        public static string CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH = bookFileDirStr + Path.PathSeparator + "CAMT-Text-Spanish-HR_2011_multi" + Path.PathSeparator;
-        string[] searchLocationPathArr = new string[] {  
+        public static string CAMT_Participant_OneBook_MULTI_DIRPATH = bookFileDirStr + Path.DirectorySeparatorChar + "CAMT_Participant_OneBook_Multi" + Path.DirectorySeparatorChar;
+        public static string CAMT_English_HR_2011_MULTI_DIRPATH = bookFileDirStr + Path.DirectorySeparatorChar + "CAMT-English-HR_2011_multi" + Path.DirectorySeparatorChar;
+        public static string CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH = bookFileDirStr + Path.DirectorySeparatorChar + "CAMT-Text-Spanish-HR_2011_multi" + Path.DirectorySeparatorChar;
+        public static string[] searchLocationPathArr = new string[] {  
             videoFileDirStr, 
             CAMT_English_HR_2011_MULTI_DIRPATH, 
             CAMT_Text_Spanish_HR_MULTI_2011_DIRPATH
@@ -87,7 +89,7 @@ namespace CAMT_IOS
                             NetworkStatus internetStatus = Reachability.InternetConnectionStatus();
                             if (internetStatus != NetworkStatus.NotReachable)
                             {
-                                setupCamtMedia();
+								setupCamtMedia(internetStatus);
                             }
                         } catch (Exception ex) {
 						    Console.WriteLine(ex.Message);
@@ -252,14 +254,15 @@ namespace CAMT_IOS
 					{ this.bookScreen = new BookScreen(); }
 					//---- push our hello world screen onto the navigation
 					//controller and pass a true so it navigates
-					string fileName = "Content/CAMT_Participant_OneBook_Single/index.html"; // remember case-sensitive
-					string localHtmlUrl = Path.Combine (NSBundle.MainBundle.BundlePath, fileName);
+					string fileName = CAMT_Participant_OneBook_DIRPATH; // remember case-sensitive
+					//string localHtmlUrl = Path.Combine (NSBundle.MainBundle.BundlePath, fileName);
 					Console.WriteLine ("fileName:  " + fileName );
-					string url = localHtmlUrl;//"http://google.com";
-					Console.WriteLine ("localHtmlUrl:  " + localHtmlUrl );
+					//string url = localHtmlUrl;//"http://google.com";
+					//Console.WriteLine ("localHtmlUrl:  " + localHtmlUrl );
 					//BookScreen.bookUrl = url;
+					BookScreen.menuToShow = "CAMT_Participant";
 					this.NavigationController.PushViewController(this.bookScreen, true);
-					bookScreen.loadThisUrl(url);
+					bookScreen.loadThisUrl(fileName +"index.html");
 				};
 
 				//---- same thing, but for the hello universe screen
@@ -278,22 +281,24 @@ namespace CAMT_IOS
 
 						//---- instantiate a new hello world screen, if it's null
 						// (it may not be null if they've navigated backwards
-						string fileName = "Content/CAMT-Text-Spanish-HR_2011/index.html"; // remember case-sensitive
+						string fileName = CAMT_Text_Spanish_HR_2011_DIRPATH;//"Content/CAMT-Text-Spanish-HR_2011/index.html"; // remember case-sensitive
+						BookScreen.menuToShow = "CAMT_Text_Spanish_HR_2011";
 						if( buttonString == "ENGLISH" )
 						{
-							fileName = "Content/CAMT-English-HR_2011_2/index.html";
+							BookScreen.menuToShow = "CAMT_English_HR_2011";
+							fileName = CAMT_English_HR_2011_DIRPATH;//"Content/CAMT-English-HR_2011_2/index.html";
 						}
 						Console.WriteLine ("fileName:  " + fileName );
 						//---- push our hello world screen onto the navigation
 						//controller and pass a true so it navigates
-						string localHtmlUrl = Path.Combine (NSBundle.MainBundle.BundlePath, fileName);
-						string url = localHtmlUrl;//"http://google.com";
+						//string localHtmlUrl = Path.Combine (NSBundle.MainBundle.BundlePath, fileName);
+						//string url = localHtmlUrl;//"http://google.com";
 						//BookScreen.bookUrl = url;
 
 						if(this.bookScreen == null)
 						{ this.bookScreen = new BookScreen(); }
 						this.NavigationController.PushViewController(this.bookScreen, true);
-						bookScreen.loadThisUrl(url);
+						bookScreen.loadThisUrl(fileName +"index.html");
 
 					};
 					actionSheet.ShowInView (View);
@@ -324,6 +329,10 @@ namespace CAMT_IOS
 					this.NavigationController.PushViewController(this.lmsWebPortal, true);
 					lmsWebPortal.loadThisUrl(url);
 				};
+				this.btnLms.AutoresizingMask = UIViewAutoresizing.All;
+				this.btnCamtBook.AutoresizingMask = UIViewAutoresizing.All;
+				this.btnTerminologyGuide.AutoresizingMask = UIViewAutoresizing.All;
+				this.btnVideos.AutoresizingMask = UIViewAutoresizing.All;
 				/*
 			  base.ViewDidLoad ();			
 			// Perform any additional setup after loading the view, typically from a nib.
@@ -333,6 +342,11 @@ namespace CAMT_IOS
 				Console.WriteLine (ex.Message);
 				Console.WriteLine (ex.StackTrace);
 			}
+		}
+
+		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
+		{
+			return true;
 		}
 
 /****
@@ -539,12 +553,18 @@ namespace CAMT_IOS
                     bool shouldDownload = (videoFilesExist() == false) || isVideosOld();
                     if (shouldDownload == true)
                     {
-                        Directory.Delete(videoFileDirStr, true);
-                        GC.Collect();
+                        try {
+                        	Directory.Delete(videoFileDirStr, true);
+                        	GC.Collect();
+                        } catch (Exception ex) {
+                        	
+                        }
                         while (downloadingBooks)
                         {
                             Thread.Sleep(5 * 1000);
                         }
+						var url = new Uri(urlString); // Html home page
+						Console.WriteLine("urlString to download video file: " + urlString);
                         downloadingVideos = true;
                         Console.WriteLine("VID DIR didn't exist so creating it");
                         System.IO.Directory.CreateDirectory(videoFileDirStr);
@@ -552,48 +572,30 @@ namespace CAMT_IOS
                         var webClient = new WebClient();
                         webClient.DownloadProgressChanged +=
                             new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-                        webClient.DownloadDataCompleted += (s, e) =>
-                        {
-                            try
-                            {
-                                Console.WriteLine("Download completed so now saving it to it's location @ \n" + videoFileDirStr);
-                                Console.WriteLine("1v");
-                                byte[] zipBytes = e.Result;
-                                Console.WriteLine("2v");
-                                string localFilename = videoZipFileName;
-                                Console.WriteLine("3v");
-                                string localPath = System.IO.Path.Combine(videoFileDirStr, localFilename);
-                                Console.WriteLine("4v");
-                                Console.WriteLine("vid download: localPath null? " + (localPath == null) + " zipBytes null ? " + (zipBytes == null));
-                                Directory.CreateDirectory(videoFileDirStr);
-                                System.IO.File.WriteAllBytes(localPath, zipBytes);
-                                Console.WriteLine("5v");
-                                Console.WriteLine("extracting the zip file: ");
-                                var zip = new ZipArchive();
-                                zip.EasyUnzip(localPath, videoFileDirStr, true, "");
-                                Console.WriteLine("Extraction done ");
-                                string[] files = Directory.GetFiles(videoFileDirStr);
-                                foreach (string tempFile in files)
-                                {
-                                    Console.WriteLine("files of extract location: " + Path.GetFileName(tempFile));
-                                }                                
-                                System.IO.File.Delete(localPath);
-                                Console.WriteLine("6v");
-                                Console.WriteLine("VIDEO FILE Totally Unzipped");
-                                GC.Collect();
-                                downloadingVideos = false;
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex.Message);
-                                Console.WriteLine(ex.StackTrace);
-                            }
-                        };
-                        Console.WriteLine("urlString to download video file: " + urlString);
+						//Console.WriteLine("Download completed so now saving it to it's location @ \n" + videoFileDirStr);
+						Console.WriteLine("1v");
+						Console.WriteLine("2v");
+						string localFilename = videoZipFileName;
+						Console.WriteLine("3v");
+						string localPath = System.IO.Path.Combine(videoFileDirStr, localFilename);
+						Console.WriteLine("Downloading now Video File ");
+						webClient.DownloadFile( url, localPath );
+						Console.WriteLine("5v");
+						Console.WriteLine("extracting the zip file: ");
+						var zip = new ZipArchive();
+						zip.EasyUnzip(localPath, videoFileDirStr, true, "");
+						Console.WriteLine("Extraction done ");
+						string[] files = Directory.GetFiles(videoFileDirStr);
+						foreach (string tempFile in files)
+						{
+							Console.WriteLine("files of extract location: " + Path.GetFileName(tempFile));
+						}  
+						System.IO.File.Delete(localPath);
+						Console.WriteLine("6v");
+						Console.WriteLine("VIDEO FILE Totally Unzipped");
 
-                        var url = new Uri(urlString); // Html home page
-                        webClient.DownloadDataAsync(url);
-                        Console.WriteLine("Downloading now Video File ");
+						GC.Collect();
+
                         //webClient.DownloadData(url);
                     }
                 }
@@ -608,6 +610,7 @@ namespace CAMT_IOS
                 }
 
             }
+			downloadingVideos = false;
         }
 
 
@@ -642,7 +645,7 @@ namespace CAMT_IOS
                         string urlString = mediaUrlPrefix + bookZipFileName;
                         Console.WriteLine("Book Dir Being Created");
                         System.IO.Directory.CreateDirectory(bookFileDirStr);
-                        Console.WriteLine("Created the DIR, now downloading the videos from the server");
+                        Console.WriteLine("Created the DIR, now downloading the books from the server");
                         var webClient = new WebClient();
                         webClient.DownloadProgressChanged +=
                             new DownloadProgressChangedEventHandler(DownloadProgressCallback);
@@ -663,7 +666,7 @@ namespace CAMT_IOS
                                 var zip = new ZipArchive();
                                 zip.EasyUnzip(localPath, bookFileDirStr, true, "");
                                 Console.WriteLine("Extraction done ");
-                                string[] files = Directory.GetFiles(videoFileDirStr);
+								string[] files = Directory.GetFiles(bookFileDirStr);
                                 foreach (string tempFile in files)
                                 {
                                     Console.WriteLine("files of extract location: " + Path.GetFileName(tempFile));
@@ -700,6 +703,7 @@ namespace CAMT_IOS
             {
                 if (internetStatus != NetworkStatus.NotReachable)
                 {
+					//System.IO.Directory.Delete(camtMediaLocalMediaPath, true);
                     setupVideos();
                     setupBooks();
                 }
