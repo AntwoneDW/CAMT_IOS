@@ -23,18 +23,10 @@ namespace CAMT_IOS
 		public override void DidReceiveMemoryWarning ()
 		{
 			// Releases the view if it doesn't have a superview.
-			base.DidReceiveMemoryWarning ();
-			
+			base.DidReceiveMemoryWarning ();			
 			// Release any cached data, images, etc that aren't in use.
 		}
-		/* 
-			"CloggedWaterPump_x264.mp4",
-			"Dish Washer and Corner Seal.flv_x264.mp4",
-			"Dryer Air Flow Troubleshooting_x264.mp4",
-			"Refridgerator Thermomemeter_x264.mp4",
-			"Reset Oven Temp_x264.mp4",
 
-		 */
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
@@ -49,7 +41,6 @@ namespace CAMT_IOS
 			}
 			TableSource vidTblSrc = new TableSource(this, fileNameList.ToArray() );
 			this.dynamicVideoTable.Source = vidTblSrc;
-
 		}
 
 		public class TableSource : UITableViewSource {
@@ -65,6 +56,7 @@ namespace CAMT_IOS
 			{
 				return tableItems.Length;
 			}
+
 			public override UITableViewCell GetCell (UITableView tableView, MonoTouch.Foundation.NSIndexPath indexPath)
 			{
 				// request a recycled cell to save memory
@@ -75,6 +67,7 @@ namespace CAMT_IOS
 				cell.TextLabel.Text = tableItems[indexPath.Row];
 				return cell;
 			}
+
 			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 			{   
 				//new UIAlertView("Row Selected", tableItems[indexPath.Row], null, "OK", null).Show();
